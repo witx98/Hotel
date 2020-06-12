@@ -4,7 +4,7 @@ connection = pymysql.Connection(
     host='localhost',
     user='Mateusz',
     password='zaq1@WSX',
-    db='hotel4',
+    db='hotel',
     charset='utf8mb4',
     cursorclass=pymysql.cursors.DictCursor
 )
