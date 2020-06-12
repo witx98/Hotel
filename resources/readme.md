@@ -7,8 +7,8 @@
 | Szczupak Ewelina | WIMiIP  | IS       |   4     | 4     | 2019/2020      |
 | Witkowski Mateusz| WIMiIP  | IS       |   4     | 4     | 2019/2020      |
 
-## Projekt bazy danych
-Tematem projektu była baza danych hotelu. Projekt ten umożliwia przede wszytskim rejestrację nowych klientów hotelu oraz dokonywanie rezerwacji. Klient hotelu może wybrać m.in. odpowiedni dla siebie hotel, rodzaj pokoju, dining options oraz metodę płatności, od której zależy rabat na całkowity koszt pobytu. Dzięki polu **user_type** w tabeli **USERS** aplikacja rozróżnia podczas logowania klientów od administratorów, którzy mają dostęp do dodatkowych opcji, takich jak np. możliwość dodawania lub usuwania pokoi czy modyfikacja cen.
+## Projekt bazy danych hotelu
+Projekt ten umożliwia przede wszytskim rejestrację nowych klientów hotelu oraz dokonywanie rezerwacji. Klient hotelu może wybrać m.in. odpowiedni dla siebie hotel, rodzaj pokoju, dining options oraz metodę płatności, od której zależy rabat na całkowity koszt pobytu. Dzięki polu **user_type** w tabeli **USERS** aplikacja rozróżnia podczas logowania klientów od administratorów, którzy mają dostęp do dodatkowych opcji, takich jak np. możliwość dodawania lub usuwania pokoi czy modyfikacja cen.
 
 
 ## Implementacja zapytań SQL
