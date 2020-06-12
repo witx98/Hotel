@@ -1,5 +1,5 @@
 # Hotel
-**Celem projektu było zaprojektowanie i implementacja bazy danych dla losowo przydzielonego tematu.
+Celem projektu było zaprojektowanie i implementacja bazy danych dla losowo przydzielonego tematu.
 .
 
 | Nazwisko i imię  | Wydział | Kierunek | Semestr | Grupa | Rok akademicki |
