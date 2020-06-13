@@ -252,7 +252,8 @@ def get_clients_with_multiple_reservations():
         sql = "SELECT users.user_name, users.user_surname, COUNT(reservations.client_id) as 'reservations' " \
               "FROM reservations " \
               "INNER JOIN users ON reservations.client_id = users.user_ID " \
-              "GROUP BY reservations.client_id HAVING COUNT(reservations.client_id) > 1 " \
+              "GROUP BY reservations.client_id " \
+              "HAVING COUNT(reservations.client_id) > 1 " \
               "ORDER BY COUNT(reservations.client_id) DESC"
         cursor.execute(sql)
         result = cursor.fetchall()
