@@ -12,6 +12,74 @@ Projekt ten umożliwia przede wszytskim rejestrację nowych klientów hotelu ora
 
 ![Hotel_diagram](./Hotel_Diagram1.svg)
 
+Do generowania bazy danych użyto panelu kontrolnego **XAMPP** oraz **phpMyAdmin**. Stworzono 9 encji, wykorzystując m.in. zapytania **DML**, dzięki którym możliwe jest dokonywanie operacji, takich jak umieszczanie w bazie, kasowanie i przeglądanie oraz zapytań **DDL**, które umożliwiają zmienianie i kasowane=ie tabel. W każdej tabeli dodano klucz główny, który umożliwa identyfikację każdego rekorku.
+
+Przykładowe zapytania tworzące tabele:
+
+Kluczem prywatnym w tabeli HOTELS jest klucz _hotel_ID_.
+
+```sql
+CREATE TABLE `hotels` (
+  `hotel_ID` int(10) NOT NULL,
+  `hotel_name` varchar(20) NOT NULL,
+  `location_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+Kluczem identyfikującym tabelę RESERVATIONS jest klucz prywatny _reservation_ID_.  W celu stworzenia powiązania obu tabel w tabeli RESERVATIONS wygenerowano klucz obcy _hotel_id.
+
+```sql
+CREATE TABLE `reservations` (
+  `reservation_ID` int(10) NOT NULL,
+  `client_id` int(10) NOT NULL,
+  `hotel_id` int(10) NOT NULL,
+  `first_day` date NOT NULL,
+  `last_day` date NOT NULL,
+  `room_id` int(10) NOT NULL,
+  `dining_option_id` int(20) NOT NULL,
+  `payment_method_id` int(10) NOT NULL,
+  `cost` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+Przykładowe polecenia tworzące relacje między tabelemi:
+
+```sql
+ALTER TABLE `hotels`
+  ADD PRIMARY KEY (`hotel_ID`),
+  ADD UNIQUE KEY `hotel_name` (`hotel_name`),
+  ADD KEY `hotels_locations_fk` (`location_id`);
+  ```
+  
+  ```sql
+ALTER TABLE `reservations`
+  ADD PRIMARY KEY (`reservation_ID`),
+  ADD KEY `reservation_clients_fk` (`client_id`),
+  ADD KEY `reservation_hotel_fk` (`hotel_id`),
+  ADD KEY `reservation_dining_options_fk` (`dining_option_id`),
+  ADD KEY `reservation_rooms_fk` (`room_id`),
+  ADD KEY `reservations_payment_methods_fk` (`payment_method_id`);
+  ```
+  
+Po prawidłowym utworzeniu wszystkich tabel i połączeń między nimi przystąpiono do wypełniania tabel odpowiednimi rekordami. Wykorzystano do tego zapytania DML. W celu uniknięcia błędów, wprowadzanie danych rozpoczęto od tabeli, która ma najmniej powiązań z innymi tabelami, czyli np. od tabeli COUNTRIES. 
+Przykładowe zapytania wypełniające tabele:
+
+```sql
+INSERT INTO `countries` (`country_ID`, `country_name`) VALUES
+('DE', 'Germany'),
+('ES', 'Spain'),
+('GR', 'Greece'),
+('PL', 'Poland');
+```
+```sql
+INSERT INTO `hotels` (`hotel_ID`, `hotel_name`, `location_id`) VALUES
+(1, 'E&M', 1),
+(2, 'Hilton', 2),
+(3, 'EwelMat', 3),
+(4, 'Sheraton', 4),
+(5, 'Mamaison Le Regina', 5),
+(6, 'Descansa con nosotro', 6);
+```
+
+
 ## Implementacja zapytań SQL
 Tutaj należy wylistować wszystkie funkcjonalności, wraz z odpowiednimi zapytaniami SQL. W tej sekcji należy zawrzeć wyłącznie zapytania z grupy DML oraz DQL.
 
