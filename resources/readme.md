@@ -12,7 +12,7 @@ Projekt ten umożliwia przede wszytskim rejestrację nowych klientów hotelu ora
 
 ![Hotel_diagram](./Hotel_Diagram1.svg)
 
-Do generowania bazy danych użyto panelu kontrolnego **XAMPP** oraz **phpMyAdmin**. Stworzono 9 encji, wykorzystując m.in. zapytania **DML**, dzięki którym możliwe jest dokonywanie operacji, takich jak umieszczanie w bazie, kasowanie i przeglądanie oraz zapytań **DDL**, które umożliwiają zmienianie i kasowane=ie tabel. W każdej tabeli dodano klucz główny, który umożliwa identyfikację każdego rekorku.
+Do generowania bazy danych użyto panelu kontrolnego **XAMPP** oraz **phpMyAdmin**. Stworzono 9 encji, wykorzystując m.in. zapytania **DML**, dzięki którym możliwe jest dokonywanie operacji, takich jak umieszczanie w bazie, kasowanie i przeglądanie oraz zapytań **DDL**, które umożliwiają zmienianie i kasowanie tabel. W każdej tabeli dodano klucz główny, który umożliwa identyfikację każdego rekordu.
 
 Przykładowe zapytania tworzące tabele:
 
@@ -25,7 +25,7 @@ CREATE TABLE `hotels` (
   `location_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
-Kluczem identyfikującym tabelę RESERVATIONS jest klucz prywatny _reservation_ID_.  W celu stworzenia powiązania obu tabel w tabeli RESERVATIONS wygenerowano klucz obcy _hotel_id.
+Kluczem identyfikującym tabelę RESERVATIONS jest klucz prywatny _reservation_ID_.  W celu stworzenia powiązania obu tabel, w tabeli RESERVATIONS wygenerowano klucz obcy: _hotel_id.
 
 ```sql
 CREATE TABLE `reservations` (
@@ -59,7 +59,7 @@ ALTER TABLE `reservations`
   ADD KEY `reservations_payment_methods_fk` (`payment_method_id`);
   ```
   
-Po prawidłowym utworzeniu wszystkich tabel i połączeń między nimi przystąpiono do wypełniania tabel odpowiednimi rekordami. Wykorzystano do tego zapytania DML. W celu uniknięcia błędów, wprowadzanie danych rozpoczęto od tabeli, która ma najmniej powiązań z innymi tabelami, czyli np. od tabeli COUNTRIES. 
+Po prawidłowym utworzeniu wszystkich tabel oraz połączeń między nimi przystąpiono do wypełniania tabel odpowiednimi rekordami. Wykorzystano do tego zapytań DML. W celu uniknięcia błędów, wprowadzanie danych rozpoczęto od tabeli, która ma najmniej powiązań z innymi tabelami, czyli np. od tabeli COUNTRIES. 
 Przykładowe zapytania wypełniające tabele:
 
 ```sql
