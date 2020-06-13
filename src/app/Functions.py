@@ -274,6 +274,7 @@ def list_all_reservations():
         print(f"Reservation number: {reservation['reservation_ID']}\n"
               f"\tClient: {reservation['user_name']} {reservation['user_surname']}\n"
               f"\tHotel: {reservation['hotel_name']}\n"
+              f"\tDate: {reservation['first_day']} - {reservation['last_day']}\n"
               f"\tRoom: {reservation['room_ID']} {reservation['room_type']}\n"
               f"\tDining option: {reservation['dining_option_type']}\n"
               f"\tPayment: {reservation['payment_method']} - {reservation['cost']} PLN")
@@ -285,14 +286,15 @@ def list_my_reservations_info(user_id):
         print(f"Reservation number: {reservation['reservation_ID']}\n"
               f"\tClient: {reservation['user_name']} {reservation['user_surname']}\n"
               f"\tHotel: {reservation['hotel_name']}\n"
+              f"\tDate: {reservation['first_day']} - {reservation['last_day']}\n"
               f"\tRoom: {reservation['room_ID']} {reservation['room_type']}\n"
               f"\tDining option: {reservation['dining_option_type']}\n"
               f"\tPayment: {reservation['payment_method']} - {reservation['cost']} PLN")
 
 
-def choose_reservation_to_edit(user_id):
+def choose_reservation(user_id, action_name):
     list_my_reservations_info(user_id)
-    reservation_id = int(input("Enter the reservation number from a list above, you want to change: "))
+    reservation_id = int(input(f"Enter the reservation number from a list above, you want to {action_name}: "))
     reservations = database.get_my_reservations_info(user_id)
     searching = True
     reservation_obj = 0
@@ -304,12 +306,12 @@ def choose_reservation_to_edit(user_id):
                 break
         if searching:
             list_my_reservations_info(user_id)
-            reservation_id = int(input("Enter the proper reservation number from a list above, you want to change: "))
+            reservation_id = int(input(f"Enter the proper reservation number from a list above, you want to {action_name}: "))
     return reservation_obj
 
 
-CLIENT_PICK_RESERVATION_MENU = """
-You are in reservation editing  menu. 
+CLIENT_PICK_TO_EDIT_RESERVATION_MENU = """
+You are in reservation editing menu. 
 
 Please decide what you want to do:
 - 'pick' to choose specific reservation to change.
@@ -338,15 +340,15 @@ YOUR CHOICE: """
 
 
 def pick_to_edit_my_reservation_menu(user_id):
-    user_input = input(CLIENT_PICK_RESERVATION_MENU)
+    user_input = input(CLIENT_PICK_TO_EDIT_RESERVATION_MENU)
     while user_input != 'back':
         if user_input == 'pick':
-            reservation_obj = choose_reservation_to_edit(user_id)
+            reservation_obj = choose_reservation(user_id, 'edit')
             edit_my_reservation(reservation_obj[0])
         else:
             print("Unknown command! Try again.")
 
-        user_input = input(CLIENT_PICK_RESERVATION_MENU)
+        user_input = input(CLIENT_PICK_TO_EDIT_RESERVATION_MENU)
 
 
 def edit_my_reservation(reservation_obj):
@@ -394,3 +396,140 @@ def edit_my_reservation(reservation_obj):
             print("Unknown command! Try again.")
 
         user_input = input(CLIENT_EDIT_RESERVATION_MENU)
+
+
+CLIENT_PICK_TO_DELETE_RESERVATION_MENU = """
+You are in reservation deleting menu. 
+
+Please decide what you want to do:
+- 'pick' to choose specific reservation to delete.
+- 'delete all' to delete all your reservations.
+- 'back' to back to the previous menu.
+YOUR CHOICE: """
+
+
+DELETE_DECISION_INTERFACE = """
+
+Are you sure you want to delete:
+- 'yes' 
+- 'no' 
+YOUR CHOICE: """
+
+
+def pick_to_delete_my_reservation_menu(user_id):
+    user_input = input(CLIENT_PICK_TO_DELETE_RESERVATION_MENU)
+    while user_input != 'back':
+        if user_input == 'pick':
+            reservation_obj = choose_reservation(user_id, 'delete')
+            decision = input(DELETE_DECISION_INTERFACE)
+            if decision == 'yes':
+                database.delete_reservation(reservation_obj[0]['reservation_ID'])
+                print("Your reservation has been deleted.")
+            elif decision == 'no':
+                pass
+            else:
+                print("Unknown command! Try again.")
+        elif user_input == 'delete all':
+            decision = input(DELETE_DECISION_INTERFACE)
+            if decision == 'yes':
+                database.delete_all_my_reservation(user_id)
+                print("All your reservations have been deleted.")
+                break
+            elif decision == 'no':
+                pass
+            else:
+                print("Unknown command! Try again.")
+        else:
+            print("Unknown command! Try again.")
+
+        user_input = input(CLIENT_PICK_TO_DELETE_RESERVATION_MENU)
+
+
+STATISTICS_MENU = """
+You are in statistics menu. 
+
+Please decide what you want to see:
+- 'booking price' to see minimum, maximum and average price of booking.
+- 'pop hotels' to see hotels by popularity.
+- 'pop rooms' to see room types by popularity.
+- 'pop dining' to see dining options by popularity.
+- 'pop payment' to see payment methods by popularity.
+- 'best clients' to see client that have more than one reservation' 
+- 'back' to back to the previous menu.
+YOUR CHOICE: """
+
+
+def cost_statistics():
+    costs = database.get_min_max_avg_cost()
+    print("Reservation costs statistics:")
+    print(f" - Lowest booking value: {costs[0]['minimum']} PLN")
+    print(f" - Average booking value: {costs[0]['average']} PLN")
+    print(f" - Highest booking value: {costs[0]['maximum']} PLN")
+
+
+def list_hotels_by_popularity():
+    print("List of hotels by number of reservations:")
+    hotels = database.get_hotels_popularity()
+    for hotel in hotels:
+        if hotel['bookings'] == 1:
+            print(f"Hotel: {hotel['hotel_name']} in {hotel['location_city']} has {hotel['bookings']} booking.")
+        else:
+            print(f"Hotel: {hotel['hotel_name']} in {hotel['location_city']} has {hotel['bookings']} bookings.")
+
+
+def list_room_types_by_popularity():
+    print("List of room types by number of bookings:")
+    room_types = database.get_room_types_popularity()
+    for room_type in room_types:
+        if room_type['bookings'] == 1:
+            print(f"The '{room_type['room_type']}' type was chosen {room_type['bookings']} time.")
+        else:
+            print(f"The '{room_type['room_type']}' type was chosen {room_type['bookings']} times.")
+
+
+def list_dining_options_by_popularity():
+    print("List of dining options by number of orders:")
+    dining_options = database.get_dining_options_popularity()
+    for dining_option in dining_options:
+        if dining_option['orders'] == 1:
+            print(f"The '{dining_option['dining_option_type']}' option was chosen {dining_option['orders']} time.")
+        else:
+            print(f"The '{dining_option['dining_option_type']}' option was chosen {dining_option['orders']} times.")
+
+
+def list_payment_methods_by_popularity():
+    print("List of payment methods by number of orders:")
+    payment_methods = database.get_payment_methods_popularity()
+    for payment_method in payment_methods:
+        if payment_method['orders'] == 1:
+            print(f"The '{payment_method['payment_method']}' method was chosen {payment_method['orders']} time.")
+        else:
+            print(f"The '{payment_method['payment_method']}' method was chosen {payment_method['orders']} times.")
+
+
+def list_clients_with_multiple_reservations():
+    print("List of clients with multiple reservations:")
+    clients = database.get_clients_with_multiple_reservations()
+    for client in clients:
+        print(f"{client['user_name']} {client['user_surname']} has {client['reservations']} reservations.")
+
+
+def statistic_menu():
+    user_input = input(STATISTICS_MENU)
+    while user_input != 'back':
+        if user_input == 'booking price':
+            cost_statistics()
+        elif user_input == 'pop hotels':
+            list_hotels_by_popularity()
+        elif user_input == 'pop rooms':
+            list_room_types_by_popularity()
+        elif user_input == 'pop dining':
+            list_dining_options_by_popularity()
+        elif user_input == 'pop payment':
+            list_payment_methods_by_popularity()
+        elif user_input == 'best clients':
+            list_clients_with_multiple_reservations()
+        else:
+            print("Unknown command! Try again.")
+
+        user_input = input(STATISTICS_MENU)

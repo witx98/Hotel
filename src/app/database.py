@@ -114,8 +114,8 @@ def add_reservation(user_id, hotel_id, first_day_obj, last_day_obj, room_id, din
 def get_all_reservations_info():
     with connection.cursor() as cursor:
         sql = "SELECT reservations.reservation_ID, users.user_name, users.user_surname, hotels.hotel_name, " \
-              "rooms.room_ID, room_types.room_type, dining_options.dining_option_type, " \
-              "payment_methods.payment_method, reservations.cost " \
+              "reservations.first_day, reservations.last_day, rooms.room_ID, room_types.room_type, " \
+              "dining_options.dining_option_type, payment_methods.payment_method, reservations.cost " \
               "FROM `reservations` " \
               "INNER JOIN `users` ON reservations.client_id=users.user_ID " \
               "INNER JOIN `hotels` ON reservations.hotel_id=hotels.hotel_ID " \
@@ -132,8 +132,8 @@ def get_all_reservations_info():
 def get_my_reservations_info(user_id):
     with connection.cursor() as cursor:
         sql = "SELECT reservations.reservation_ID, users.user_name, users.user_surname, hotels.hotel_name, " \
-              "rooms.room_ID, room_types.room_type, dining_options.dining_option_type, " \
-              "payment_methods.payment_method, reservations.cost " \
+              "reservations.first_day, reservations.last_day, rooms.room_ID, room_types.room_type, " \
+              "dining_options.dining_option_type, payment_methods.payment_method, reservations.cost " \
               "FROM `reservations` " \
               "INNER JOIN `users` ON reservations.client_id=users.user_ID " \
               "INNER JOIN `hotels` ON reservations.hotel_id=hotels.hotel_ID " \
@@ -172,3 +172,88 @@ def update_my_reservation(hotel_id, first_day, last_day, room_id, dining_option_
               "WHERE reservation_ID = %s"
         cursor.execute(sql, (hotel_id, first_day, last_day, room_id, dining_option_id, payment_method_id, cost, reservation_id))
         connection.commit()
+
+
+def delete_reservation(reservation_id):
+    with connection.cursor() as cursor:
+        sql = "DELETE FROM `reservations` WHERE reservations.reservation_ID = %s"
+        cursor.execute(sql, reservation_id)
+        connection.commit()
+
+
+def delete_all_my_reservation(user_id):
+    with connection.cursor() as cursor:
+        sql = "DELETE FROM `reservations` WHERE reservations.client_id = %s"
+        cursor.execute(sql, user_id)
+        connection.commit()
+
+
+def get_min_max_avg_cost():
+    with connection.cursor() as cursor:
+        sql = "SELECT MIN(cost) as 'minimum', MAX(cost) as 'maximum', AVG(cost) as 'average' FROM `reservations`"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
+
+
+def get_hotels_popularity():
+    with connection.cursor() as cursor:
+        sql = "SELECT hotels.hotel_name, locations.location_city, " \
+              "COUNT(reservations.hotel_id) as 'bookings' " \
+              "FROM reservations " \
+              "INNER JOIN hotels ON reservations.hotel_id = hotels.hotel_ID " \
+              "INNER JOIN locations ON hotels.location_id = locations.location_ID " \
+              "GROUP BY hotels.hotel_ID " \
+              "ORDER BY COUNT(reservations.hotel_id) DESC"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
+
+
+def get_room_types_popularity():
+    with connection.cursor() as cursor:
+        sql = "SELECT room_types.room_type, COUNT(reservations.room_id) as 'bookings' " \
+              "FROM reservations " \
+              "INNER JOIN rooms ON reservations.room_id = rooms.room_ID " \
+              "INNER JOIN room_types ON rooms.room_type_id = room_types.room_type_ID " \
+              "GROUP BY room_types.room_type_ID " \
+              "ORDER BY COUNT(reservations.room_id) DESC"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
+
+
+def get_dining_options_popularity():
+    with connection.cursor() as cursor:
+        sql = "SELECT dining_options.dining_option_type, COUNT(reservations.dining_option_id) as 'orders' " \
+              "FROM reservations " \
+              "INNER JOIN dining_options ON reservations.dining_option_id = dining_options.dining_option_ID " \
+              "GROUP BY reservations.dining_option_id " \
+              "ORDER BY COUNT(reservations.dining_option_id) DESC"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
+
+
+def get_payment_methods_popularity():
+    with connection.cursor() as cursor:
+        sql = "SELECT payment_methods.payment_method, COUNT(reservations.payment_method_id) as 'orders' " \
+              "FROM reservations " \
+              "INNER JOIN payment_methods ON reservations.payment_method_id = payment_methods.payment_method_ID " \
+              "GROUP BY reservations.payment_method_id " \
+              "ORDER BY COUNT(reservations.payment_method_id) DESC"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
+
+
+def get_clients_with_multiple_reservations():
+    with connection.cursor() as cursor:
+        sql = "SELECT users.user_name, users.user_surname, COUNT(reservations.client_id) as 'reservations' " \
+              "FROM reservations " \
+              "INNER JOIN users ON reservations.client_id = users.user_ID " \
+              "GROUP BY reservations.client_id HAVING COUNT(reservations.client_id) > 1 " \
+              "ORDER BY COUNT(reservations.client_id) DESC"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result

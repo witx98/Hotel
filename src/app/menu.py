@@ -24,6 +24,7 @@ WORKER_MENU = """
 Enter:
 - 'hotels' to list all available hotels.
 - 'list res' to see the list of all reservations in the system.
+- 'stat' to view different booking statistics. 
 - 'log out' to log off and go to previous menu.
 YOUR CHOICE: """
 
@@ -88,6 +89,8 @@ def worker_menu(user_id):
             Functions.list_hotels()
         elif user_input == 'list res':
             Functions.list_all_reservations()
+        elif user_input == 'stat':
+            Functions.statistic_menu()
         elif user_input == 'log out':
             menu()
         else:
@@ -104,7 +107,7 @@ def client_reservations_menu(user_id):
         elif user_input == 'edit':
             Functions.pick_to_edit_my_reservation_menu(user_id)
         elif user_input == 'del':
-            Functions.delete_my_reservation(user_id)
+            Functions.pick_to_delete_my_reservation_menu(user_id)
         else:
             print("Unknown command! try again.")
 
