@@ -25,6 +25,7 @@ Enter:
 - 'hotels' to list all available hotels.
 - 'list res' to see the list of all reservations in the system.
 - 'stat' to view different booking statistics. 
+- 'moderate' to change the application offer.
 - 'log out' to log off and go to previous menu.
 YOUR CHOICE: """
 
@@ -91,6 +92,8 @@ def worker_menu(user_id):
             Functions.list_all_reservations()
         elif user_input == 'stat':
             Functions.statistic_menu()
+        elif user_input == 'moderate':
+            Functions.moderate_menu()
         elif user_input == 'log out':
             menu()
         else:

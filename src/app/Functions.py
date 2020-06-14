@@ -46,20 +46,31 @@ def register_user():
     user_password = input("Enter your password: ")
     user_type = 0
 
-    database.add_user(user_name, user_surname, user_email, user_telephone, user_PESEL, user_login, user_password, user_type)
+    database.add_user(user_name, user_surname, user_email, user_telephone, user_PESEL, user_login, user_password,
+                      user_type)
 
 
 def list_hotels():
     print("List of all available hotels:")
     for hotel in database.get_all_hotels():
-        print(f"\t{hotel['country_ID']} {hotel['location_city']} Hotel number: {hotel['hotel_ID']} Hotel name: {hotel['hotel_name']} ")
+        print(
+            f"\t{hotel['country_ID']} {hotel['location_city']} Hotel number: {hotel['hotel_ID']} Hotel name: {hotel['hotel_name']} ")
 
 
-def list_room_types(hotel_id):
-    room_types = database.get_room_types(hotel_id)
+def list_hotel_room_types(hotel_id):
+    room_types = database.get_hotel_room_types(hotel_id)
     print("\tTypes of rooms available in this hotel:")
     for room_type in room_types:
-        print(f"\t - {room_type['room_type_ID']} '{room_type['room_type']}' - cost of a night: {room_type['room_type_price']}")
+        print(
+            f"\t - {room_type['room_type_ID']} '{room_type['room_type']}' - cost of a night: {room_type['room_type_price']}")
+
+
+def list_room_types():
+    room_types = database.get_room_types()
+    print("\tAvailable types of rooms in offer:")
+    for room_type in room_types:
+        print(
+            f"\t - {room_type['room_type_ID']} '{room_type['room_type']}' - cost of a night: {room_type['room_type_price']}")
 
 
 def list_all_rooms(hotel_id):
@@ -73,15 +84,17 @@ def list_dining_options():
     dining_options = database.get_dining_options()
     print("\tDining options available in this hotel:")
     for dining_option in dining_options:
-        print(f"\t - {dining_option['dining_option_ID']} {dining_option['dining_option_type']} - cost of service: {dining_option['dining_option_cost']}")
+        print(
+            f"\t - {dining_option['dining_option_ID']} {dining_option['dining_option_type']} - cost of service: {dining_option['dining_option_cost']}")
 
 
 def list_payment_methods():
     payment_methods = database.get_payment_methods()
     print("\tPayment options available in this hotel:")
     for payment_method in payment_methods:
-        discount = round((1 - payment_method['payment_method_discount'])*100)
-        print(f"\t - {payment_method['payment_method_ID']} {payment_method['payment_method']} - amount of discount: {discount}%")
+        discount = round((1 - payment_method['payment_method_discount']) * 100)
+        print(
+            f"\t - {payment_method['payment_method_ID']} {payment_method['payment_method']} - amount of discount: {discount}%")
 
 
 def hotel_info():
@@ -93,7 +106,7 @@ def hotel_info():
     print(f"\tCountry: {hotel[0]['country_name']}")
     print(f"\tCity: {hotel[0]['location_city']}")
     print(f"\tAddress: {hotel[0]['street_address']}")
-    list_room_types(hotel_id)
+    list_hotel_room_types(hotel_id)
     list_dining_options()
     list_payment_methods()
 
@@ -108,7 +121,7 @@ YOUR CHOICE: """
 
 
 def calculate_cost(reservation_period, room_cost, dining_option_cost, payment_method_discount):
-    return (reservation_period*room_cost + dining_option_cost)*payment_method_discount
+    return (reservation_period * room_cost + dining_option_cost) * payment_method_discount
 
 
 def check_date_format(date_string, date_format):
@@ -247,13 +260,15 @@ def make_reservation(user_id):
 
             payment_method_id, payment_method_discount = choose_payment_method()
 
-            reservation_cost = calculate_cost(reservation_period.days, room_cost, dining_option_cost, payment_method_discount)
+            reservation_cost = round(
+                calculate_cost(reservation_period.days, room_cost, dining_option_cost, payment_method_discount), 2)
             print(f"Reservation cost: {reservation_cost} PLN for {reservation_period.days} days.")
 
             decision = input(DECISION_INTERFACE)
             while True:
                 if decision == 'save':
-                    database.add_reservation(user_id, hotel_id, first_day_obj.date(), last_day_obj.date(), room_id, dining_option_id, payment_method_id, reservation_cost)
+                    database.add_reservation(user_id, hotel_id, first_day_obj.date(), last_day_obj.date(), room_id,
+                                             dining_option_id, payment_method_id, reservation_cost)
                     print("Your reservation has been saved.")
                     break
                 elif decision == 'cancel':
@@ -306,7 +321,8 @@ def choose_reservation(user_id, action_name):
                 break
         if searching:
             list_my_reservations_info(user_id)
-            reservation_id = int(input(f"Enter the proper reservation number from a list above, you want to {action_name}: "))
+            reservation_id = int(
+                input(f"Enter the proper reservation number from a list above, you want to {action_name}: "))
     return reservation_obj
 
 
@@ -317,7 +333,6 @@ Please decide what you want to do:
 - 'pick' to choose specific reservation to change.
 - 'back' to back to the previous menu.
 YOUR CHOICE: """
-
 
 CLIENT_EDIT_RESERVATION_MENU = """
 
@@ -373,9 +388,9 @@ def edit_my_reservation(reservation_obj):
 
         elif user_input == 'save':
             reservation_period = reservation_obj['last_day'] - reservation_obj['first_day']
-            reservation_obj['cost'] = calculate_cost(reservation_period.days, reservation_obj['room_type_price'],
-                                                     reservation_obj['dining_option_cost'],
-                                                     reservation_obj['payment_method_discount'])
+            reservation_obj['cost'] = round(calculate_cost(reservation_period.days, reservation_obj['room_type_price'],
+                                                           reservation_obj['dining_option_cost'],
+                                                           reservation_obj['payment_method_discount']), 2)
             print(f"Reservation cost: {reservation_obj['cost']} PLN for {reservation_period.days} days.")
             decision = input(EDIT_DECISION_INTERFACE)
             if decision == 'yes':
@@ -406,7 +421,6 @@ Please decide what you want to do:
 - 'delete all' to delete all your reservations.
 - 'back' to back to the previous menu.
 YOUR CHOICE: """
-
 
 DELETE_DECISION_INTERFACE = """
 
@@ -533,3 +547,156 @@ def statistic_menu():
             print("Unknown command! Try again.")
 
         user_input = input(STATISTICS_MENU)
+
+
+MODERATE_MENU = """
+You are in moderation menu. 
+
+Please decide what you want to do:
+- 'add hotel' to add new hotel to the offer.
+- 'add room' to add new room to the hotel.
+- 'del hotel' to remove hotel from the offer.
+- 'del room' to remove room in the hotel from the offer.
+- 'change costs' to change costs in the offer.
+- 'back' to back to the previous menu.
+YOUR CHOICE: """
+
+ADD_HOTEL_DECISION_INTERFACE = """
+
+Are you sure you want to add new hotel:
+- 'yes' 
+- 'no' 
+YOUR CHOICE: """
+
+
+def adding_hotel_process():
+    hotel_name = input("Enter the name of the new hotel: ")
+    country_id = input("Enter the country code 'PL': ")
+    country_name = input("Enter country name: ")
+    location_city = input("Enter the name of the city in which the hotel is located: ")
+    street_address = input("Enter hotel address: ")
+    decision = input(ADD_HOTEL_DECISION_INTERFACE)
+    if decision == 'yes':
+        database.add_country(country_id, country_name)
+        database.add_location(location_city, street_address, country_id)
+        location_id = database.get_latest_location_id()
+        database.add_hotel(hotel_name, location_id[0]['location_id'])
+        print("New hotel has been added to the offer.")
+    elif decision == 'no':
+        pass
+    else:
+        print("Unknown command! Try again.")
+
+
+ADD_ROOM_DECISION_INTERFACE = """
+
+Are you sure you want to add new room:
+- 'yes' 
+- 'no' 
+YOUR CHOICE: """
+
+
+def adding_room_process():
+    hotel_id = choose_hotel()
+    list_room_types()
+    room_type_id = int(input("Enter the number of room type you want to create: "))
+    decision = input(ADD_ROOM_DECISION_INTERFACE)
+    if decision == 'yes':
+        database.add_room(hotel_id, room_type_id)
+        print("New room has been added to the offer.")
+    elif decision == 'no':
+        pass
+    else:
+        print("Unknown command! Try again.")
+
+
+DELETE_HOTEL_DECISION_INTERFACE = """
+
+Are you sure you want to remove this hotel:
+- 'yes' 
+- 'no' 
+YOUR CHOICE: """
+
+
+def deleting_hotel_process():
+    hotel_id = choose_hotel()
+    decision = input(DELETE_HOTEL_DECISION_INTERFACE)
+    if decision == 'yes':
+        database.delete_hotel(hotel_id)
+        print("Hotel has been removed from the offer.")
+    elif decision == 'no':
+        pass
+    else:
+        print("Unknown command! Try again.")
+
+
+DELETE_ROOM_DECISION_INTERFACE = """
+
+Are you sure you want to remove this room:
+- 'yes' 
+- 'no' 
+YOUR CHOICE: """
+
+
+def deleting_room_process():
+    hotel_id = choose_hotel()
+    room_id, room_cost = choose_room(hotel_id)
+    print(room_id)
+    decision = input(DELETE_ROOM_DECISION_INTERFACE)
+    if decision == 'yes':
+        database.delete_room(room_id)
+        print("Room has been removed from the offer.")
+    elif decision == 'no':
+        pass
+    else:
+        print("Unknown command! Try again.")
+
+
+CHANGE_COSTS_MENU = """
+You are in costs menu. 
+
+Please decide what you want to do:
+- 'room cost' top change room  cost.
+- 'dining cost' to add new room to the hotel.
+- 'back' to back to the previous menu.
+YOUR CHOICE: """
+
+
+def changing_cost_process():
+    user_input = input(CHANGE_COSTS_MENU)
+    while user_input != 'back':
+        if user_input == 'room cost':
+            list_room_types()
+            room_type_id = int(input("Enter the number of room type you want to change cost: "))
+            room_type_price = int(input("Enter a new price for this room type: "))
+            database.change_room_type_cost(room_type_id, room_type_price)
+            print("This room type cost has been changed.")
+        elif user_input == 'dining cost':
+            list_dining_options()
+            dining_option_id = int(input("Enter the number of dining option you want to change cost: "))
+            dining_option_cost = int(input("Enter a new price for this room dining option: "))
+            database.change_dining_option_cost(dining_option_id, dining_option_cost)
+            print("This dining option cost has been changed.")
+        else:
+            print("Unknown command! Try again.")
+
+        user_input = input(CHANGE_COSTS_MENU)
+
+
+def moderate_menu():
+    user_input = input(MODERATE_MENU)
+    while user_input != 'back':
+        if user_input == 'add hotel':
+            adding_hotel_process()
+        elif user_input == 'add room':
+            adding_room_process()
+        elif user_input == 'del hotel':
+            deleting_hotel_process()
+        elif user_input == 'del room':
+            deleting_room_process()
+        elif user_input == 'change costs':
+            changing_cost_process()
+        else:
+            print("Unknown command! Try again.")
+
+        user_input = input(MODERATE_MENU)

@@ -57,7 +57,7 @@ def get_hotel_address(hotel_id):
         return result
 
 
-def get_room_types(hotel_id):
+def get_hotel_room_types(hotel_id):
     with connection.cursor() as cursor:
         sql = "SELECT room_types.room_type_ID, room_types.room_type, room_types.room_type_price " \
               "FROM `room_types` " \
@@ -66,6 +66,16 @@ def get_room_types(hotel_id):
               "GROUP by room_types.room_type " \
               "ORDER by room_types.room_type_ID"
         cursor.execute(sql, hotel_id)
+        result = cursor.fetchall()
+        return result
+
+
+def get_room_types():
+    with connection.cursor() as cursor:
+        sql = "SELECT room_types.room_type_ID, room_types.room_type, room_types.room_type_price " \
+              "FROM `room_types` " \
+              "ORDER by room_types.room_type_ID"
+        cursor.execute(sql)
         result = cursor.fetchall()
         return result
 
@@ -258,3 +268,78 @@ def get_clients_with_multiple_reservations():
         cursor.execute(sql)
         result = cursor.fetchall()
         return result
+
+
+def add_country(country_id, country_name):
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO `countries` (countries.country_ID, countries.country_name) " \
+              "SELECT * FROM (SELECT %s AS country_ID, %s AS country_name) AS tmp " \
+              "WHERE NOT EXISTS ( SELECT country_ID FROM countries WHERE country_ID = %s ) LIMIT 1"
+        cursor.execute(sql, (country_id, country_name, country_id))
+        connection.commit()
+
+
+def add_location(location_city, street_address, country_id):
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO `locations` (locations.location_city, locations.street_address, locations.country_id) " \
+              "VALUES(%s, %s, %s) "
+        cursor.execute(sql, (location_city, street_address, country_id))
+        connection.commit()
+
+
+def get_latest_location_id():
+    with connection.cursor() as cursor:
+        sql = "SELECT MAX(locations.location_ID) AS 'location_id' FROM locations"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
+
+
+def add_hotel(hotel_name, location_id):
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO `hotels` (hotels.hotel_name, hotels.location_id) VALUES (%s,%s)"
+        cursor.execute(sql, (hotel_name, location_id))
+        connection.commit()
+
+
+def add_room(hotel_id, room_type_id):
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO `rooms` (rooms.hotel_id, rooms.room_type_id) VALUES (%s,%s)"
+        cursor.execute(sql, (hotel_id, room_type_id))
+        connection.commit()
+
+
+def change_room_type_cost(room_type_id, room_type_price):
+    with connection.cursor() as cursor:
+        sql = "UPDATE `room_types` SET room_types.room_type_price = %s WHERE room_types.room_type_ID = %s"
+        cursor.execute(sql, (room_type_price, room_type_id))
+        connection.commit()
+
+
+def change_dining_option_cost(dining_option_id, dining_option_cost):
+    with connection.cursor() as cursor:
+        sql = "UPDATE `dining_options` SET dining_options.dining_option_cost = %s " \
+              "WHERE dining_options.dining_option_ID = %s"
+        cursor.execute(sql, (dining_option_cost, dining_option_id))
+        connection.commit()
+
+
+def delete_hotel(hotel_id):
+    with connection.cursor() as cursor:
+        sql = "DELETE `reservations`, `rooms`, `hotels` " \
+              "FROM `hotels` " \
+              "INNER JOIN `reservations` ON reservations.hotel_id = hotels.hotel_ID " \
+              "INNER JOIN `rooms` ON rooms.hotel_id = hotels.hotel_ID " \
+              "WHERE hotels.hotel_ID = %s"
+        cursor.execute(sql, hotel_id)
+        connection.commit()
+
+
+def delete_room(room_id):
+    with connection.cursor() as cursor:
+        sql = "DELETE `reservations`, `rooms`" \
+              "FROM `rooms`" \
+              "INNER JOIN `reservations` ON reservations.room_id = rooms.room_ID " \
+              "WHERE rooms.room_ID = %s"
+        cursor.execute(sql, room_id)
+        connection.commit()
