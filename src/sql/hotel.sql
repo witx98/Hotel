@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.0.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 12 Cze 2020, 18:18
+-- Czas generowania: 14 Cze 2020, 10:41
 -- Wersja serwera: 10.4.11-MariaDB
--- Wersja PHP: 7.4.6
+-- Wersja PHP: 7.4.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Baza danych: `hotel1`
+-- Baza danych: `hotel`
 --
 
 -- --------------------------------------------------------
@@ -39,6 +40,7 @@ CREATE TABLE `countries` (
 INSERT INTO `countries` (`country_ID`, `country_name`) VALUES
 ('DE', 'Germany'),
 ('ES', 'Spain'),
+('FR', 'France'),
 ('GR', 'Greece'),
 ('PL', 'Poland');
 
@@ -111,7 +113,8 @@ INSERT INTO `locations` (`location_ID`, `location_city`, `street_address`, `coun
 (3, 'Berlin', 'Kaiserdamm 12', 'DE'),
 (4, 'Athens', 'Liosion 165', 'GR'),
 (5, 'Madrid', 'Paseo de la Castellana 54', 'ES'),
-(6, 'Madrid', 'Calle de Arturo Soria 27', 'ES');
+(6, 'Madrid', 'Calle de Arturo Soria 27', 'ES'),
+(12, 'Paris', 'Rue Chapon 48', 'FR');
 
 -- --------------------------------------------------------
 
@@ -158,19 +161,12 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`reservation_ID`, `client_id`, `hotel_id`, `first_day`, `last_day`, `room_id`, `dining_option_id`, `payment_method_id`, `cost`) VALUES
-(1, 1, 1, '2020-03-25', '2020-03-25', 1, 1, 1, NULL),
-(2, 2, 1, '2020-02-11', '2020-02-20', 2, 3, 2, NULL),
-(3, 3, 2, '2020-03-30', '2020-04-08', 11, 4, 1, NULL),
-(4, 4, 3, '2020-07-25', '2020-08-03', 23, 4, 2, NULL),
-(5, 5, 3, '2020-08-24', '2020-09-10', 27, 2, 1, NULL),
-(6, 6, 3, '2021-03-14', '2021-03-26', 35, 3, 2, NULL),
-(7, 7, 3, '2020-10-02', '2020-10-12', 37, 3, 2, 999),
-(8, 8, 5, '2020-12-22', '2021-01-03', 41, 4, 2, NULL),
-(9, 9, 5, '2020-07-13', '2020-08-01', 42, 2, 1, NULL),
-(10, 10, 6, '2021-02-07', '2021-02-10', 58, 4, 2, NULL),
-(11, 11, 2, '2020-03-30', '2020-04-08', 15, 4, 1, NULL),
 (12, 25, 6, '2020-06-13', '2020-07-11', 58, 3, 3, 17318.5),
-(13, 5, 5, '2020-06-17', '2020-06-27', 49, 1, 1, 1000);
+(17, 25, 6, '2020-09-07', '2020-09-14', 51, 4, 4, 1350),
+(18, 25, 4, '2020-11-09', '2020-11-13', 33, 4, 4, 810),
+(19, 25, 3, '2020-12-20', '2020-12-24', 28, 4, 4, 2430),
+(22, 1, 1, '2020-12-02', '2020-12-12', 6, 4, 3, 3895),
+(24, 11, 3, '2020-06-18', '2020-06-28', 28, 1, 2, 5700.66);
 
 -- --------------------------------------------------------
 
@@ -270,7 +266,7 @@ INSERT INTO `room_types` (`room_type_ID`, `room_type`, `room_type_price`) VALUES
 (1, 'Single room', 200),
 (2, 'Double room', 300),
 (3, 'Triple', 400),
-(4, 'Quad', 650),
+(4, 'Quad', 580),
 (5, 'Adults + c', 370);
 
 -- --------------------------------------------------------
@@ -280,7 +276,7 @@ INSERT INTO `room_types` (`room_type_ID`, `room_type`, `room_type_price`) VALUES
 --
 
 CREATE TABLE `users` (
-  `user_ID` int(100) NOT NULL,
+  `user_ID` int(10) NOT NULL,
   `user_name` varchar(20) NOT NULL,
   `user_surname` varchar(25) NOT NULL,
   `user_email` varchar(30) NOT NULL,
@@ -393,13 +389,13 @@ ALTER TABLE `dining_options`
 -- AUTO_INCREMENT dla tabeli `hotels`
 --
 ALTER TABLE `hotels`
-  MODIFY `hotel_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `hotel_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT dla tabeli `locations`
 --
 ALTER TABLE `locations`
-  MODIFY `location_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `location_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT dla tabeli `payment_methods`
@@ -411,13 +407,13 @@ ALTER TABLE `payment_methods`
 -- AUTO_INCREMENT dla tabeli `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `reservation_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `reservation_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT dla tabeli `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `room_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `room_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT dla tabeli `room_types`
@@ -429,7 +425,7 @@ ALTER TABLE `room_types`
 -- AUTO_INCREMENT dla tabeli `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_ID` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `user_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Ograniczenia dla zrzutów tabel
@@ -451,17 +447,17 @@ ALTER TABLE `locations`
 -- Ograniczenia dla tabeli `reservations`
 --
 ALTER TABLE `reservations`
-  ADD CONSTRAINT `reservation_clients_fk` FOREIGN KEY (`client_id`) REFERENCES `users` (`user_ID`),
   ADD CONSTRAINT `reservation_dining_options_fk` FOREIGN KEY (`dining_option_id`) REFERENCES `dining_options` (`dining_option_ID`),
-  ADD CONSTRAINT `reservation_hotel_fk` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`hotel_ID`),
-  ADD CONSTRAINT `reservation_rooms_fk` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_ID`),
-  ADD CONSTRAINT `reservations_payment_methods_fk` FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods` (`payment_method_ID`);
+  ADD CONSTRAINT `reservations_hotels_fk` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`hotel_ID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `reservations_payment_methods_fk` FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods` (`payment_method_ID`),
+  ADD CONSTRAINT `reservations_rooms_fk` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_ID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `reservations_users_fk` FOREIGN KEY (`client_id`) REFERENCES `users` (`user_ID`) ON DELETE CASCADE;
 
 --
 -- Ograniczenia dla tabeli `rooms`
 --
 ALTER TABLE `rooms`
-  ADD CONSTRAINT `rooms_hotels_fk` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`hotel_ID`),
+  ADD CONSTRAINT `rooms_hotels_fk` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`hotel_ID`) ON DELETE CASCADE,
   ADD CONSTRAINT `rooms_room_type_fk` FOREIGN KEY (`room_type_id`) REFERENCES `room_types` (`room_type_ID`);
 COMMIT;
 
